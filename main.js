@@ -205,6 +205,8 @@ const setCurrentSlide = function (index) {
 
       // go to next slide on timing
       createSlideLive();
+
+      STORES.slide.domBar.children[index].classList.add('Active');
     } else {
       STORES.slide.domSlide.children[index]
         .children[0].onload = function () {
@@ -212,10 +214,11 @@ const setCurrentSlide = function (index) {
 
           // go to next slide on timing
           createSlideLive();
+
+          STORES.slide.domBar.children[index].classList.add('Active');
         };
     }
 
-    STORES.slide.domBar.children[index].classList.add('Active');
     STORES.slide.domSlide.children[index].classList.add('Active');
 
     STORES.slide.current = index;
