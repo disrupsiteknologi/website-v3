@@ -58,7 +58,7 @@ body {
   border-left: 1px solid #FFFFFF;
   text-align: center;
   font-size: 0.75rem;
-  animation: Loading 10s linear infinite normal;
+  animation: Loading 1s linear infinite normal;
 }
 @keyframes Loading {
   0% {

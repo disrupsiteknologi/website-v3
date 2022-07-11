@@ -200,11 +200,6 @@ const setCurrentSlide = function (index) {
       STORES.slide.domBar.children[index].classList.remove('Pass');
     }
 
-    STORES.slide.domBar.children[index].classList.add('Active');
-    STORES.slide.domSlide.children[index].classList.add('Active');
-
-    STORES.slide.current = index;
-
     if (STORES.slide.domSlide.children[index].children[0].complete) {
       toggleLoading();
 
@@ -219,6 +214,11 @@ const setCurrentSlide = function (index) {
           createSlideLive();
         };
     }
+
+    STORES.slide.domBar.children[index].classList.add('Active');
+    STORES.slide.domSlide.children[index].classList.add('Active');
+
+    STORES.slide.current = index;
   }
 };
 
