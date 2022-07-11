@@ -1,11 +1,12 @@
 /**
  * Stores data.
  */
-const STORES = {
+ const STORES = {
   slide: {
     current: null,
     total: null,
     timing: null,
+    domWrapper: null,
     domControl: null,
     domSlide: null,
     domMedia: null,
@@ -19,17 +20,19 @@ const STORES = {
 /**
  * Create a new slide system.
  *
+ * @param   dom   wrapper container
  * @param   dom   control container
  * @param   dom   slide container
  * @param   dom   slide media container
  * @param   dom   bar container
  * @return  void
  */
-const Slide = function (domControl, domSlide, domMedia, domBar) {
+const Slide = function (domWrapper, domControl, domSlide, domMedia, domBar) {
   // set slide configuration from dataset
   STORES.slide.current = null;
   STORES.slide.total = parseInt(domSlide.dataset.total) || 1;
   STORES.slide.timing = parseInt(domSlide.dataset.timing) || 10000;
+  STORES.slide.domWrapper = domWrapper;
   STORES.slide.domControl = domControl;
   STORES.slide.domSlide = domSlide;
   STORES.slide.domMedia = domMedia;
@@ -59,6 +62,15 @@ const Slide = function (domControl, domSlide, domMedia, domBar) {
 };
 
 /**
+ * Add loading panel.
+ *
+ * @return  void
+ */
+const toggleLoading = function () {
+  STORES.slide.domWrapper.classList.toggle('Loading');
+};
+
+/**
  * Toggle slide mode.
  *
  * @return  void
@@ -71,7 +83,7 @@ const toggleSlideMode = function () {
   } else {
     STORES.slide.domMedia.querySelector('button[data-type="mode"]').dataset.mode = 'pause';
     STORES.slide.domBar.children[STORES.slide.current].classList.remove('Pause');
-    createSlideLive(true);
+    createSlideLive();
   }
 };
 
@@ -82,9 +94,9 @@ const toggleSlideMode = function () {
  */
 const createSlideLive = function () {
   const timing = STORES.slide.liveLeft ?
-                  (STORES.slide.timing - STORES.slide.liveLeft)
-                  :
-                  STORES.slide.timing;
+                 (STORES.slide.timing - STORES.slide.liveLeft)
+                 :
+                 STORES.slide.timing;
 
   STORES.slide.liveStamp = Date.now();
   STORES.slide.live = window.setTimeout(nextSlide, timing);
@@ -182,6 +194,8 @@ const setCurrentSlide = function (index) {
   }
 
   if (index <= lastIndex) {
+    toggleLoading();
+
     if (index < STORES.slide.current) {
       STORES.slide.domBar.children[index].classList.remove('Pass');
     }
@@ -191,14 +205,27 @@ const setCurrentSlide = function (index) {
 
     STORES.slide.current = index;
 
-    // go to next slide on timing
-    createSlideLive();
+    if (STORES.slide.domSlide.children[index].children[0].complete) {
+      toggleLoading();
+
+      // go to next slide on timing
+      createSlideLive();
+    } else {
+      STORES.slide.domSlide.children[index]
+        .children[0].onload = function () {
+          toggleLoading();
+
+          // go to next slide on timing
+          createSlideLive();
+        };
+    }
   }
 };
 
 document.addEventListener('DOMContentLoaded', function () {
   // Initialization slide
   new Slide(
+    document.getElementById('Wrapper'),
     document.getElementById('SlideControl'),
     document.getElementById('SlideItems'),
     document.getElementById('InfoControl'),
