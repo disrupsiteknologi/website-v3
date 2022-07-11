@@ -71,7 +71,7 @@ const toggleSlideMode = function () {
   } else {
     STORES.slide.domMedia.querySelector('button[data-type="mode"]').dataset.mode = 'pause';
     STORES.slide.domBar.children[STORES.slide.current].classList.remove('Pause');
-    createSlideLive();
+    createSlideLive(true);
   }
 };
 
@@ -94,13 +94,20 @@ const createSlideLive = function () {
 /**
  * Destroy slide live.
  *
+ * @param   boolean
  * @return  void
  */
-const destroySlideLive = function () {
+const destroySlideLive = function (isPause) {
   window.clearTimeout(STORES.slide.live);
 
   STORES.slide.live = null;
-  STORES.slide.liveLeft = Date.now() - STORES.slide.liveStamp;
+
+  if (isPause) {
+    STORES.slide.liveLeft = Date.now() - STORES.slide.liveStamp;
+  } else {
+    STORES.slide.liveLeft = null;
+  }
+
   STORES.slide.liveStamp = null;
 };
 
